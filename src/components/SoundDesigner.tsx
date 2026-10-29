@@ -1,21 +1,22 @@
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { designDucatiSound } from "@/lib/sound-ai.functions";
+import { designEngineSound } from "@/lib/sound-ai.functions";
 import type { SoundProfile } from "@/lib/engine-audio";
 
-type Props = { base: SoundProfile; value: SoundProfile | null; onChange: (p: SoundProfile | null) => void };
+type Props = { vehicle: string; label: string; base: SoundProfile; value: SoundProfile | null; onChange: (p: SoundProfile | null) => void };
 
 const SLIDERS: { key: keyof SoundProfile; label: string; min: number; max: number; step: number }[] = [
   { key: "growl", label: "Growl", min: 0.1, max: 1, step: 0.01 },
-  { key: "lope", label: "V4 pulse", min: 0, max: 1, step: 0.01 },
+  { key: "lope", label: "Pulse", min: 0, max: 1, step: 0.01 },
   { key: "subOctave", label: "Bass", min: 0, max: 1, step: 0.01 },
   { key: "filterTop", label: "Scream", min: 1500, max: 8000, step: 50 },
   { key: "exhaustNoise", label: "Rasp", min: 0, max: 0.6, step: 0.01 },
   { key: "popIntensity", label: "Pops", min: 0.2, max: 2, step: 0.01 },
+  { key: "supercharger", label: "Boost whine", min: 0, max: 1, step: 0.01 },
 ];
 
-export function DucatiSoundDesigner({ base, value, onChange }: Props) {
-  const design = useServerFn(designDucatiSound);
+export function SoundDesigner({ vehicle, label, base, value, onChange }: Props) {
+  const design = useServerFn(designEngineSound);
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
@@ -25,7 +26,7 @@ export function DucatiSoundDesigner({ base, value, onChange }: Props) {
     setLoading(true);
     setMsg(null);
     try {
-      const r = await design({ data: { description: text } });
+      const r = await design({ data: { description: text, vehicle } });
       if (r.error || !r.profile) setMsg(r.error ?? "No result.");
       else {
         const { summary, ...p } = r.profile;
@@ -42,7 +43,7 @@ export function DucatiSoundDesigner({ base, value, onChange }: Props) {
   return (
     <section className="glass mt-4 rounded-2xl p-4">
       <div className="mb-2 flex items-center justify-between">
-        <span className="font-mono text-[10px] tracking-[0.3em] text-muted-foreground">AI SOUND DESIGNER · DUCATI</span>
+        <span className="font-mono text-[10px] tracking-[0.3em] text-muted-foreground">AI SOUND DESIGNER · {label}</span>
         {value && (
           <button onClick={() => { onChange(null); setMsg(null); }} className="chip-off rounded-lg px-3 py-1.5 font-mono text-xs font-bold tracking-widest">
             STOCK
@@ -54,7 +55,7 @@ export function DucatiSoundDesigner({ base, value, onChange }: Props) {
           value={text}
           onChange={(e) => setText(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && !loading && void generate()}
-          placeholder="e.g. deep MotoGP bark with loud crackles"
+          placeholder="e.g. deep race bark with loud crackles"
           maxLength={500}
           className="flex-1 rounded-lg border border-border bg-background/40 px-3 py-3 text-sm outline-none focus:border-primary"
         />

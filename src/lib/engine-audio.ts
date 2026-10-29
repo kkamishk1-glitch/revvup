@@ -99,7 +99,7 @@ export class EngineAudio {
     this.whine2.type = "sine";
     this.whineFilter = ctx.createBiquadFilter();
     this.whineFilter.type = "bandpass";
-    this.whineFilter.Q.value = 3;
+    this.whineFilter.Q.value = 1.2;
     this.whineGain = ctx.createGain();
     this.whineGain.gain.value = 0;
     this.whine.connect(this.whineFilter);
@@ -172,7 +172,7 @@ export class EngineAudio {
     this.whine2.frequency.setTargetAtTime(wf * 2.01, t, 0.03);
     this.whineFilter.frequency.setTargetAtTime(wf * 1.4, t, 0.03);
     const sc = p.supercharger ?? 0;
-    this.whineGain.gain.setTargetAtTime(running ? sc * 0.12 * (0.15 + norm * 0.85) * (0.4 + throttle * 0.6) : 0, t, 0.06);
+    this.whineGain.gain.setTargetAtTime(running ? sc * 0.45 * (0.3 + norm * 0.7) * (0.5 + throttle * 0.5) : 0, t, 0.06);
     const g = running ? 0.35 + norm * 0.35 + throttle * 0.3 : 0;
     this.engineGain.gain.setTargetAtTime(g, t, running ? 0.04 : 0.25);
   }

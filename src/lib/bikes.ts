@@ -90,7 +90,7 @@ export const BIKES: Bike[] = [
     idle: 1250,
     redline: 14600,
     maxRpm: 15100,
-    sound: { cylinders: 4, baseTone: "sawtooth", growl: 0.65, filterBase: 600, filterTop: 6200, exhaustNoise: 0.26, popIntensity: 1.3, subOctave: 0.3, lope: 0.15, supercharger: 0.9, whineRatio: 9 },
+    sound: { cylinders: 4, baseTone: "sawtooth", growl: 0.65, filterBase: 600, filterTop: 6200, exhaustNoise: 0.26, popIntensity: 1.3, subOctave: 0.3, lope: 0.15, supercharger: 1, whineRatio: 7 },
   },
   {
     id: "chiron",
