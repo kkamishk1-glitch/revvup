@@ -1,6 +1,8 @@
 import hayabusa from "@/assets/hayabusa.jpg";
 import h2r from "@/assets/h2r.jpg";
 import tomahawk from "@/assets/tomahawk.jpg";
+import panigale from "@/assets/panigale.jpg";
+import s1000rr from "@/assets/s1000rr.jpg";
 import type { SoundProfile } from "./engine-audio";
 
 export type Bike = {
@@ -31,7 +33,7 @@ export const BIKES: Bike[] = [
     idle: 1100,
     redline: 11000,
     maxRpm: 12000,
-    sound: { cylinders: 4, baseTone: "sawtooth", growl: 0.6, filterBase: 500, filterTop: 4200, exhaustNoise: 0.25, popIntensity: 1.1, subOctave: 0.35 },
+    sound: { cylinders: 4, baseTone: "square", growl: 0.35, filterBase: 380, filterTop: 3000, exhaustNoise: 0.18, popIntensity: 1.1, subOctave: 0.6 },
   },
   {
     id: "h2r",
@@ -60,6 +62,34 @@ export const BIKES: Bike[] = [
     redline: 6000,
     maxRpm: 6500,
     sound: { cylinders: 10, baseTone: "sawtooth", growl: 0.95, filterBase: 300, filterTop: 2400, exhaustNoise: 0.3, popIntensity: 1.6, subOctave: 0.7 },
+  },
+  {
+    id: "panigale",
+    brand: "Ducati",
+    name: "Panigale V4 R",
+    image: panigale,
+    engine: "Desmosedici Stradale R V4",
+    displacement: "998 cc",
+    cylinders: "4 (90° V)",
+    transmission: "6-speed, quickshifter",
+    idle: 1400,
+    redline: 15500,
+    maxRpm: 16500,
+    sound: { cylinders: 4, baseTone: "sawtooth", growl: 0.9, filterBase: 450, filterTop: 5200, exhaustNoise: 0.35, popIntensity: 1.5, subOctave: 0.5 },
+  },
+  {
+    id: "s1000rr",
+    brand: "BMW",
+    name: "S 1000 RR",
+    image: s1000rr,
+    engine: "ShiftCam inline-four",
+    displacement: "999 cc",
+    cylinders: "4 (inline)",
+    transmission: "6-speed, quickshifter",
+    idle: 1250,
+    redline: 14600,
+    maxRpm: 15100,
+    sound: { cylinders: 4, baseTone: "sawtooth", growl: 0.7, filterBase: 650, filterTop: 6500, exhaustNoise: 0.3, popIntensity: 1.3, subOctave: 0.2 },
   },
 ];
 
