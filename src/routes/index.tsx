@@ -19,7 +19,7 @@ export const Route = createFileRoute("/")({
 
 function Garage() {
   const [bikeIdx, setBikeIdx] = useState(0);
-  const bike = BIKES[bikeIdx];
+  const bike = BIKES[bikeIdx] ?? BIKES[0]!;
   const [ignition, setIgnition] = useState(false);
   const [starting, setStarting] = useState(false);
   const [gear, setGear] = useState<Gear>("N");
