@@ -3,6 +3,7 @@ import h2r from "@/assets/h2r.jpg";
 import tomahawk from "@/assets/tomahawk.jpg";
 import panigale from "@/assets/panigale.jpg";
 import s1000rr from "@/assets/s1000rr.jpg";
+import chiron from "@/assets/chiron.jpg";
 import type { SoundProfile } from "./engine-audio";
 
 export type Bike = {
@@ -75,21 +76,35 @@ export const BIKES: Bike[] = [
     idle: 1400,
     redline: 15500,
     maxRpm: 16500,
-    sound: { cylinders: 4, baseTone: "sawtooth", growl: 0.9, filterBase: 450, filterTop: 5200, exhaustNoise: 0.35, popIntensity: 1.5, subOctave: 0.5 },
+    sound: { cylinders: 4, baseTone: "sawtooth", growl: 0.8, filterBase: 420, filterTop: 4800, exhaustNoise: 0.28, popIntensity: 1.5, subOctave: 0.55, lope: 0.75 },
   },
   {
     id: "s1000rr",
     brand: "BMW",
     name: "S 1000 RR",
     image: s1000rr,
-    engine: "ShiftCam inline-four",
+    engine: "ShiftCam inline-four, supercharged",
     displacement: "999 cc",
     cylinders: "4 (inline)",
     transmission: "6-speed, quickshifter",
     idle: 1250,
     redline: 14600,
     maxRpm: 15100,
-    sound: { cylinders: 4, baseTone: "sawtooth", growl: 0.7, filterBase: 650, filterTop: 6500, exhaustNoise: 0.3, popIntensity: 1.3, subOctave: 0.2 },
+    sound: { cylinders: 4, baseTone: "sawtooth", growl: 0.65, filterBase: 600, filterTop: 6200, exhaustNoise: 0.26, popIntensity: 1.3, subOctave: 0.3, lope: 0.15, supercharger: 0.9, whineRatio: 9 },
+  },
+  {
+    id: "chiron",
+    brand: "Bugatti",
+    name: "Chiron",
+    image: chiron,
+    engine: "W16, quad-turbocharged",
+    displacement: "7,993 cc",
+    cylinders: "16 (W)",
+    transmission: "7-speed DCT (sim. 6)",
+    idle: 900,
+    redline: 6700,
+    maxRpm: 7100,
+    sound: { cylinders: 16, baseTone: "sawtooth", growl: 0.75, filterBase: 280, filterTop: 2600, exhaustNoise: 0.4, popIntensity: 0.9, subOctave: 0.75, lope: 0.1, supercharger: 0.6, whineRatio: 22 },
   },
 ];
 
