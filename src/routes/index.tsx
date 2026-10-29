@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { DRIVE_MODES, MODE_REV, applyMode, type DriveMode } from "@/lib/drive-modes";
+import logo from "@/assets/logo.png";
 import { BIKES, GEARS, revRate, type Gear } from "@/lib/bikes";
 import { EngineAudio, type SoundProfile } from "@/lib/engine-audio";
 import { SoundDesigner } from "@/components/SoundDesigner";
@@ -7,9 +9,9 @@ import { SoundDesigner } from "@/components/SoundDesigner";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Rev Garage — Hayabusa, H2R, Panigale, S1000RR, Tomahawk & Chiron" },
+      { title: "REVVUP — Hayabusa, H2R, Panigale, S1000RR, Tomahawk & Chiron" },
       { name: "description", content: "Turn the ignition, pick a gear and rev the Suzuki Hayabusa, Kawasaki H2R, Ducati Panigale V4 R, BMW S 1000 RR and Dodge Tomahawk in a premium garage." },
-      { property: "og:title", content: "Rev Garage — Hayabusa, H2R, Panigale, S1000RR, Tomahawk & Chiron" },
+      { property: "og:title", content: "REVVUP — Hayabusa, H2R, Panigale, S1000RR, Tomahawk & Chiron" },
       { property: "og:description", content: "Ignition, gears, pops and a high-end RPM dash. Hold to rev." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -30,12 +32,14 @@ function Garage() {
   const [volume, setVolume] = useState(0.8);
   const [muted, setMuted] = useState(false);
   const [customSounds, setCustomSounds] = useState<Record<string, SoundProfile>>({});
-  const sound = customSounds[bike.id] ?? bike.sound;
+  const [mode, setMode] = useState<DriveMode>("comfort");
+  const sound = useMemo(() => applyMode(customSounds[bike.id] ?? bike.sound, mode), [customSounds, bike, mode]);
 
   const audio = useRef<EngineAudio | null>(null);
-  const s = useRef({ rpm: 0, throttle: 0, holding: false, running: false, gear: "N" as Gear, auto: false, bike, lastShift: 0, crackleAt: 0 });
+  const s = useRef({ rpm: 0, throttle: 0, holding: false, running: false, gear: "N" as Gear, auto: false, bike, lastShift: 0, crackleAt: 0, mode: "comfort" as DriveMode });
   s.current.bike = bike;
   s.current.auto = autoGear;
+  s.current.mode = mode;
   const soundRef = useRef(sound);
   soundRef.current = sound;
 
@@ -85,7 +89,7 @@ function Garage() {
       if (st.running) {
         if (st.holding) {
           const nearLimit = st.rpm > b.redline;
-          st.rpm += range * revRate(st.gear) * dt * st.throttle * (nearLimit ? 0.3 : 1);
+          st.rpm += range * revRate(st.gear) * MODE_REV[st.mode] * dt * st.throttle * (nearLimit ? 0.3 : 1);
           if (st.rpm >= b.maxRpm) {
             st.rpm = b.maxRpm - range * 0.04; // limiter bounce
             audio.current?.pop(1, 0.5);
@@ -219,8 +223,9 @@ function Garage() {
     <main className="garage-bg min-h-screen pb-10 text-foreground">
       <div className="mx-auto max-w-5xl px-4 pt-5">
         <header className="flex items-center justify-between">
-          <h1 className="font-display text-xl font-bold tracking-[0.25em] sm:text-2xl">
-            REV<span className="text-primary">GARAGE</span>
+          <h1 className="flex items-center gap-2 font-display text-xl font-bold tracking-[0.25em] sm:text-2xl">
+            <img src={logo} alt="" width={32} height={32} className="h-8 w-8" />
+            REVV<span className="text-primary">UP</span>
           </h1>
           <span className="font-mono text-[10px] tracking-widest text-muted-foreground sm:text-xs">KEYS: I · N · 1–6 · SPACE</span>
         </header>
@@ -279,6 +284,21 @@ function Garage() {
               const red = p > redNorm;
               return <div key={i} className={`flex-1 rounded-sm transition-colors duration-75 ${on ? (red ? "seg-red" : "seg-on") : "seg-off"}`} />;
             })}
+          </div>
+        </section>
+
+        <section className="glass mt-4 rounded-2xl p-3">
+          <div className="mb-2 px-1 font-mono text-[10px] tracking-[0.3em] text-muted-foreground">DRIVE MODE · {DRIVE_MODES.find((d) => d.id === mode)?.hint}</div>
+          <div className="grid grid-cols-4 gap-1.5">
+            {DRIVE_MODES.map((d) => (
+              <button
+                key={d.id}
+                onClick={() => setMode(d.id)}
+                className={`h-12 rounded-xl font-mono text-xs font-bold tracking-widest transition-all ${mode === d.id ? "gear-on" : "gear-off"}`}
+              >
+                {d.label}
+              </button>
+            ))}
           </div>
         </section>
 
