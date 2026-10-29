@@ -4,6 +4,11 @@ import tomahawk from "@/assets/tomahawk.jpg";
 import panigale from "@/assets/panigale.jpg";
 import s1000rr from "@/assets/s1000rr.jpg";
 import chiron from "@/assets/chiron.jpg";
+import chiron300 from "@/assets/chiron300.jpg";
+import jesko from "@/assets/jesko.jpg";
+import u9 from "@/assets/u9.jpg";
+import gls450 from "@/assets/gls450.jpg";
+import tesla from "@/assets/tesla.jpg";
 import type { SoundProfile } from "./engine-audio";
 
 export type Bike = {
@@ -105,6 +110,76 @@ export const BIKES: Bike[] = [
     redline: 6700,
     maxRpm: 7100,
     sound: { cylinders: 16, baseTone: "sawtooth", growl: 0.75, filterBase: 280, filterTop: 2600, exhaustNoise: 0.4, popIntensity: 0.9, subOctave: 0.75, lope: 0.1, supercharger: 0.6, whineRatio: 22 },
+  },
+  {
+    id: "chiron300",
+    brand: "Bugatti",
+    name: "Chiron Super Sport 300+",
+    image: chiron300,
+    engine: "W16, quad-turbo, 1,578 hp",
+    displacement: "7,993 cc",
+    cylinders: "16 (W)",
+    transmission: "7-speed DCT (sim. 6)",
+    idle: 950,
+    redline: 6900,
+    maxRpm: 7300,
+    sound: { cylinders: 16, baseTone: "sawtooth", growl: 0.85, filterBase: 300, filterTop: 3000, exhaustNoise: 0.45, popIntensity: 1.1, subOctave: 0.8, lope: 0.1, supercharger: 0.75, whineRatio: 24 },
+  },
+  {
+    id: "jesko",
+    brand: "Koenigsegg",
+    name: "Jesko Absolut",
+    image: jesko,
+    engine: "Twin-turbo flat-plane V8",
+    displacement: "5,065 cc",
+    cylinders: "8 (V)",
+    transmission: "9-speed LST (sim. 6)",
+    idle: 1000,
+    redline: 8500,
+    maxRpm: 8800,
+    sound: { cylinders: 8, baseTone: "sawtooth", growl: 0.9, filterBase: 450, filterTop: 5200, exhaustNoise: 0.35, popIntensity: 1.6, subOctave: 0.45, lope: 0.05, supercharger: 0.5, whineRatio: 18 },
+  },
+  {
+    id: "u9",
+    brand: "Yangwang",
+    name: "U9 Extreme",
+    image: u9,
+    engine: "Quad electric motors, 3,000 PS",
+    displacement: "Electric",
+    cylinders: "0 (4 motors)",
+    transmission: "Single-speed (sim. 6)",
+    idle: 600,
+    redline: 18000,
+    maxRpm: 20000,
+    sound: { cylinders: 2, baseTone: "sine", growl: 0.1, filterBase: 600, filterTop: 7000, exhaustNoise: 0.02, popIntensity: 0.2, subOctave: 0.5, lope: 0, supercharger: 1, whineRatio: 6 },
+  },
+  {
+    id: "gls450",
+    brand: "Mercedes-Benz",
+    name: "GLS 450 (2026)",
+    image: gls450,
+    engine: "Turbo inline-six + EQ Boost",
+    displacement: "2,999 cc",
+    cylinders: "6 (inline)",
+    transmission: "9G-TRONIC (sim. 6)",
+    idle: 650,
+    redline: 6300,
+    maxRpm: 6600,
+    sound: { cylinders: 6, baseTone: "triangle", growl: 0.25, filterBase: 260, filterTop: 1900, exhaustNoise: 0.1, popIntensity: 0.25, subOctave: 0.6, lope: 0, supercharger: 0.15, whineRatio: 14 },
+  },
+  {
+    id: "tesla",
+    brand: "Tesla",
+    name: "Model S Plaid",
+    image: tesla,
+    engine: "Tri-motor electric, 1,020 hp",
+    displacement: "Electric",
+    cylinders: "0 (3 motors)",
+    transmission: "Single-speed (sim. 6)",
+    idle: 500,
+    redline: 18000,
+    maxRpm: 20000,
+    sound: { cylinders: 2, baseTone: "sine", growl: 0.1, filterBase: 500, filterTop: 5000, exhaustNoise: 0.01, popIntensity: 0.2, subOctave: 0.35, lope: 0, supercharger: 0.8, whineRatio: 5 },
   },
 ];
 
