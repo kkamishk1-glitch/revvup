@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { DRIVE_MODES, MODE_REV, applyMode, type DriveMode } from "@/lib/drive-modes";
-import logo from "@/assets/logo.png";
+import logo from "@/assets/revvup-logo.png";
 import { BIKES, GEARS, revRate, type Gear } from "@/lib/bikes";
 import { EngineAudio, type SoundProfile } from "@/lib/engine-audio";
 import { SoundDesigner } from "@/components/SoundDesigner";
@@ -223,9 +223,8 @@ function Garage() {
     <main className="garage-bg min-h-screen pb-10 text-foreground">
       <div className="mx-auto max-w-5xl px-4 pt-5">
         <header className="flex items-center justify-between">
-          <h1 className="flex items-center gap-2 font-display text-xl font-bold tracking-[0.25em] sm:text-2xl">
-            <img src={logo} alt="" width={32} height={32} className="h-8 w-8" />
-            REVV<span className="text-primary">UP</span>
+          <h1 className="m-0">
+            <img src={logo} alt="REVVUP" width={1080} height={470} className="h-12 w-auto rounded-md sm:h-14" />
           </h1>
           <span className="font-mono text-[10px] tracking-widest text-muted-foreground sm:text-xs">KEYS: I · N · 1–6 · SPACE</span>
         </header>
