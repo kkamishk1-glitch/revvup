@@ -1,14 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { BIKES, GEARS, revRate, type Gear } from "@/lib/bikes";
-import { EngineAudio } from "@/lib/engine-audio";
+import { EngineAudio, type SoundProfile } from "@/lib/engine-audio";
+import { DucatiSoundDesigner } from "@/components/DucatiSoundDesigner";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Rev Garage — Hayabusa, H2R, Panigale, S1000RR & Tomahawk" },
+      { title: "Rev Garage — Hayabusa, H2R, Panigale, S1000RR, Tomahawk & Chiron" },
       { name: "description", content: "Turn the ignition, pick a gear and rev the Suzuki Hayabusa, Kawasaki H2R, Ducati Panigale V4 R, BMW S 1000 RR and Dodge Tomahawk in a premium garage." },
-      { property: "og:title", content: "Rev Garage — Hayabusa, H2R, Panigale, S1000RR & Tomahawk" },
+      { property: "og:title", content: "Rev Garage — Hayabusa, H2R, Panigale, S1000RR, Tomahawk & Chiron" },
       { property: "og:description", content: "Ignition, gears, pops and a high-end RPM dash. Hold to rev." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -28,15 +29,19 @@ function Garage() {
   const [rpm, setRpm] = useState(0);
   const [volume, setVolume] = useState(0.8);
   const [muted, setMuted] = useState(false);
+  const [ducatiCustom, setDucatiCustom] = useState<SoundProfile | null>(null);
+  const sound = bike.id === "panigale" && ducatiCustom ? ducatiCustom : bike.sound;
 
   const audio = useRef<EngineAudio | null>(null);
   const s = useRef({ rpm: 0, throttle: 0, holding: false, running: false, gear: "N" as Gear, auto: false, bike, lastShift: 0, crackleAt: 0 });
   s.current.bike = bike;
   s.current.auto = autoGear;
+  const soundRef = useRef(sound);
+  soundRef.current = sound;
 
   const ensureAudio = useCallback(() => {
     if (!audio.current) {
-      audio.current = new EngineAudio(s.current.bike.sound);
+      audio.current = new EngineAudio(soundRef.current);
       audio.current.setVolume(volume);
       audio.current.setMuted(muted);
     }
@@ -47,8 +52,8 @@ function Garage() {
   useEffect(() => audio.current?.setVolume(volume), [volume]);
   useEffect(() => audio.current?.setMuted(muted), [muted]);
   useEffect(() => {
-    audio.current?.applyProfile(bike.sound);
-  }, [bike]);
+    audio.current?.applyProfile(sound);
+  }, [sound]);
 
   const shiftTo = useCallback((g: Gear, withPop = true) => {
     const st = s.current;
@@ -276,6 +281,8 @@ function Garage() {
             })}
           </div>
         </section>
+
+        {bike.id === "panigale" && <DucatiSoundDesigner base={bike.sound} value={ducatiCustom} onChange={setDucatiCustom} />}
 
         <div className="mt-4 grid gap-4 md:grid-cols-[1fr_1.2fr]">
           {/* Ignition — whole card is the control */}
