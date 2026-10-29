@@ -19,6 +19,7 @@ export function SoundDesigner({ vehicle, label, base, value, onChange }: Props) 
   const design = useServerFn(designEngineSound);
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(false);
+  const [open, setOpen] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
   const cur = value ?? base;
 
@@ -84,6 +85,7 @@ export function SoundDesigner({ vehicle, label, base, value, onChange }: Props) 
           </label>
         ))}
       </div>
+      </div>)}
     </section>
   );
 }
