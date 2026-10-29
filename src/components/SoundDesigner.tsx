@@ -42,14 +42,18 @@ export function SoundDesigner({ vehicle, label, base, value, onChange }: Props) 
 
   return (
     <section className="glass mt-4 rounded-2xl p-4">
-      <div className="mb-2 flex items-center justify-between">
-        <span className="font-mono text-[10px] tracking-[0.3em] text-muted-foreground">AI SOUND DESIGNER · {label}</span>
+      <div className="flex items-center justify-between gap-2">
+        <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} className="flex flex-1 items-center gap-2 text-left font-mono text-[10px] tracking-[0.3em] text-muted-foreground">
+          <span className={`inline-block transition-transform ${open ? "rotate-90" : ""}`}>▶</span>
+          AI SOUND DESIGNER · {label}{value ? " · CUSTOM" : ""}
+        </button>
         {value && (
           <button onClick={() => { onChange(null); setMsg(null); }} className="chip-off rounded-lg px-3 py-1.5 font-mono text-xs font-bold tracking-widest">
             STOCK
           </button>
         )}
       </div>
+      {open && (<div className="mt-3">
       <div className="flex flex-col gap-2 sm:flex-row">
         <input
           value={text}
