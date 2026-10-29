@@ -8,6 +8,9 @@ export type SoundProfile = {
   exhaustNoise: number; // breathy noise level
   popIntensity: number;
   subOctave: number; // low rumble mix
+  lope?: number; // 0..1 uneven firing pulse (big-bang / V4 character)
+  supercharger?: number; // 0..1 forced-induction whine level
+  whineRatio?: number; // whine pitch multiple of crank speed
 };
 
 function makeCurve(amount: number) {
@@ -35,6 +38,13 @@ export class EngineAudio {
   private noiseFilter: BiquadFilterNode;
   private noiseBuf: AudioBuffer;
   private profile: SoundProfile;
+  private lopeOsc: OscillatorNode;
+  private lopeDepth: GainNode;
+  private lopeNode: GainNode;
+  private whine: OscillatorNode;
+  private whine2: OscillatorNode;
+  private whineGain: GainNode;
+  private whineFilter: BiquadFilterNode;
   private volume = 0.8;
   private muted = false;
 
@@ -72,7 +82,29 @@ export class EngineAudio {
     this.oscA.connect(mixA).connect(this.shaper);
     this.oscB.connect(mixB).connect(this.shaper);
     this.oscSub.connect(this.subGain).connect(this.filter);
-    this.shaper.connect(this.filter).connect(this.engineGain).connect(comp);
+    // lope: amplitude-modulate the engine at half firing rate for uneven pulse character
+    this.lopeNode = ctx.createGain();
+    this.lopeNode.gain.value = 1;
+    this.lopeOsc = ctx.createOscillator();
+    this.lopeOsc.type = "sine";
+    this.lopeDepth = ctx.createGain();
+    this.lopeDepth.gain.value = 0;
+    this.lopeOsc.connect(this.lopeDepth).connect(this.lopeNode.gain);
+    this.shaper.connect(this.filter).connect(this.lopeNode).connect(this.engineGain).connect(comp);
+
+    // supercharger / turbo whine
+    this.whine = ctx.createOscillator();
+    this.whine.type = "triangle";
+    this.whine2 = ctx.createOscillator();
+    this.whine2.type = "sine";
+    this.whineFilter = ctx.createBiquadFilter();
+    this.whineFilter.type = "bandpass";
+    this.whineFilter.Q.value = 3;
+    this.whineGain = ctx.createGain();
+    this.whineGain.gain.value = 0;
+    this.whine.connect(this.whineFilter);
+    this.whine2.connect(this.whineFilter);
+    this.whineFilter.connect(this.whineGain).connect(comp);
 
     // exhaust noise
     this.noiseBuf = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate);
@@ -92,6 +124,9 @@ export class EngineAudio {
     this.oscA.start();
     this.oscB.start();
     this.oscSub.start();
+    this.lopeOsc.start();
+    this.whine.start();
+    this.whine2.start();
     noise.start();
   }
 
@@ -130,6 +165,14 @@ export class EngineAudio {
     this.filter.frequency.setTargetAtTime(p.filterBase + (p.filterTop - p.filterBase) * norm * (0.6 + 0.4 * throttle), t, 0.03);
     this.noiseFilter.frequency.setTargetAtTime(400 + norm * 3000, t, 0.03);
     this.noiseGain.gain.setTargetAtTime(running ? p.exhaustNoise * (0.3 + throttle * 0.9) : 0, t, 0.04);
+    this.lopeOsc.frequency.setTargetAtTime(fire * 0.5, t, 0.015);
+    this.lopeDepth.gain.setTargetAtTime((p.lope ?? 0) * 0.6 * (1 - norm * 0.5), t, 0.05);
+    const wf = Math.max(40, (rpm / 60) * (p.whineRatio ?? 9));
+    this.whine.frequency.setTargetAtTime(wf, t, 0.03);
+    this.whine2.frequency.setTargetAtTime(wf * 2.01, t, 0.03);
+    this.whineFilter.frequency.setTargetAtTime(wf * 1.4, t, 0.03);
+    const sc = p.supercharger ?? 0;
+    this.whineGain.gain.setTargetAtTime(running ? sc * 0.12 * (0.15 + norm * 0.85) * (0.4 + throttle * 0.6) : 0, t, 0.06);
     const g = running ? 0.35 + norm * 0.35 + throttle * 0.3 : 0;
     this.engineGain.gain.setTargetAtTime(g, t, running ? 0.04 : 0.25);
   }
