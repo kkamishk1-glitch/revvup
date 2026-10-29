@@ -7,9 +7,9 @@ import { SoundDesigner } from "@/components/SoundDesigner";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Rev Garage — Hayabusa, H2R, Panigale, S1000RR, Tomahawk & Chiron" },
+      { title: "REVVUP — Hayabusa, H2R, Panigale, S1000RR, Tomahawk & Chiron" },
       { name: "description", content: "Turn the ignition, pick a gear and rev the Suzuki Hayabusa, Kawasaki H2R, Ducati Panigale V4 R, BMW S 1000 RR and Dodge Tomahawk in a premium garage." },
-      { property: "og:title", content: "Rev Garage — Hayabusa, H2R, Panigale, S1000RR, Tomahawk & Chiron" },
+      { property: "og:title", content: "REVVUP — Hayabusa, H2R, Panigale, S1000RR, Tomahawk & Chiron" },
       { property: "og:description", content: "Ignition, gears, pops and a high-end RPM dash. Hold to rev." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
