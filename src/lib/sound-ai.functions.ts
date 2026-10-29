@@ -8,7 +8,8 @@ const ProfileSchema = z.object({
   exhaustNoise: z.number().describe("Breathy exhaust rasp 0-0.6"),
   popIntensity: z.number().describe("Pops & crackles 0.2-2"),
   subOctave: z.number().describe("Low bass rumble 0-1"),
-  lope: z.number().describe("Uneven V4 big-bang pulse character 0-1"),
+  lope: z.number().describe("Uneven firing pulse / lumpy character 0-1"),
+  supercharger: z.number().describe("Supercharger/turbo whine level 0-1; keep 0 if the engine has no forced induction unless the rider asks for it"),
   summary: z.string().describe("One short sentence describing the tuned sound"),
 });
 
@@ -16,8 +17,8 @@ export type AiSoundProfile = z.infer<typeof ProfileSchema>;
 
 const clamp = (v: number, a: number, b: number) => Math.min(b, Math.max(a, Number.isFinite(v) ? v : a));
 
-export const designDucatiSound = createServerFn({ method: "POST" })
-  .inputValidator((input: { description: string }) => ({ description: String(input.description ?? "").slice(0, 500) }))
+export const designEngineSound = createServerFn({ method: "POST" })
+  .inputValidator((input: { description: string; vehicle: string }) => ({ description: String(input.description ?? "").slice(0, 500), vehicle: String(input.vehicle ?? "").slice(0, 200) }))
   .handler(async ({ data }): Promise<{ profile?: AiSoundProfile; error?: string }> => {
     if (!data.description.trim()) return { error: "Describe the sound you want first." };
     const apiKey = process.env["LOVABLE_API_KEY"];
@@ -33,7 +34,7 @@ export const designDucatiSound = createServerFn({ method: "POST" })
       const result = streamText({
         model: provider.responses("openai/gpt-6-astra"),
         instructions:
-          "You are a sound engineer tuning a synthesized Ducati Panigale V4 R (998cc 90° V4, twin-pulse firing). Map the rider's description to synth parameters within the given ranges. Keep it recognisably a Ducati V4.",
+          `You are a sound engineer tuning a synthesized engine for: ${data.vehicle}. Map the rider's description to synth parameters within the given ranges. Keep it recognisable as that vehicle.`,
         messages: [{ role: "user", content: data.description }],
         output: Output.object({ schema: ProfileSchema }),
         providerOptions: {
@@ -56,12 +57,13 @@ export const designDucatiSound = createServerFn({ method: "POST" })
           popIntensity: clamp(p.popIntensity, 0.2, 2),
           subOctave: clamp(p.subOctave, 0, 1),
           lope: clamp(p.lope, 0, 1),
+          supercharger: clamp(p.supercharger, 0, 1),
           summary: p.summary,
         },
       };
     } catch (e) {
       const status = (e as { statusCode?: number }).statusCode;
-      console.error("designDucatiSound failed", e);
+      console.error("designEngineSound failed", e);
       if (status === 429) return { error: "Too many requests — try again in a moment." };
       if (status === 402) return { error: "AI credits have run out for this workspace." };
       return { error: "Couldn't design a sound right now. Please try again." };

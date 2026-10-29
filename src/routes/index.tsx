@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { BIKES, GEARS, revRate, type Gear } from "@/lib/bikes";
 import { EngineAudio, type SoundProfile } from "@/lib/engine-audio";
-import { DucatiSoundDesigner } from "@/components/DucatiSoundDesigner";
+import { SoundDesigner } from "@/components/SoundDesigner";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -29,8 +29,8 @@ function Garage() {
   const [rpm, setRpm] = useState(0);
   const [volume, setVolume] = useState(0.8);
   const [muted, setMuted] = useState(false);
-  const [ducatiCustom, setDucatiCustom] = useState<SoundProfile | null>(null);
-  const sound = bike.id === "panigale" && ducatiCustom ? ducatiCustom : bike.sound;
+  const [customSounds, setCustomSounds] = useState<Record<string, SoundProfile>>({});
+  const sound = customSounds[bike.id] ?? bike.sound;
 
   const audio = useRef<EngineAudio | null>(null);
   const s = useRef({ rpm: 0, throttle: 0, holding: false, running: false, gear: "N" as Gear, auto: false, bike, lastShift: 0, crackleAt: 0 });
@@ -282,7 +282,21 @@ function Garage() {
           </div>
         </section>
 
-        {bike.id === "panigale" && <DucatiSoundDesigner base={bike.sound} value={ducatiCustom} onChange={setDucatiCustom} />}
+        <SoundDesigner
+          key={bike.id}
+          vehicle={`${bike.brand} ${bike.name} — ${bike.engine}, ${bike.displacement}, ${bike.cylinders} cylinders`}
+          label={bike.brand.toUpperCase()}
+          base={bike.sound}
+          value={customSounds[bike.id] ?? null}
+          onChange={(p) =>
+            setCustomSounds((m) => {
+              const n = { ...m };
+              if (p) n[bike.id] = p;
+              else delete n[bike.id];
+              return n;
+            })
+          }
+        />
 
         <div className="mt-4 grid gap-4 md:grid-cols-[1fr_1.2fr]">
           {/* Ignition — whole card is the control */}
