@@ -11,6 +11,7 @@ export type SoundProfile = {
   lope?: number; // 0..1 uneven firing pulse (big-bang / V4 character)
   supercharger?: number; // 0..1 forced-induction whine level
   whineRatio?: number; // whine pitch multiple of crank speed
+  electric?: boolean; // EV: no combustion, no pops, motor whine + inverter hum
 };
 
 function makeCurve(amount: number) {
@@ -173,6 +174,14 @@ export class EngineAudio {
     this.whineFilter.frequency.setTargetAtTime(wf * 1.4, t, 0.03);
     const sc = p.supercharger ?? 0;
     this.whineGain.gain.setTargetAtTime(running ? sc * 0.45 * (0.3 + norm * 0.7) * (0.5 + throttle * 0.5) : 0, t, 0.06);
+    if (p.electric) {
+      // EV: silent standby hum, no exhaust, no firing pulses — motor/inverter whine dominates
+      this.noiseGain.gain.setTargetAtTime(0, t, 0.04);
+      this.lopeDepth.gain.setTargetAtTime(0, t, 0.05);
+      this.whineGain.gain.setTargetAtTime(running ? 0.08 + norm * 0.4 * (0.5 + throttle * 0.5) + throttle * 0.08 : 0, t, 0.05);
+      this.engineGain.gain.setTargetAtTime(running ? 0.04 + norm * 0.14 + throttle * 0.08 : 0, t, running ? 0.05 : 0.25);
+      return;
+    }
     const g = running ? 0.35 + norm * 0.35 + throttle * 0.3 : 0;
     this.engineGain.gain.setTargetAtTime(g, t, running ? 0.04 : 0.25);
   }
@@ -181,6 +190,7 @@ export class EngineAudio {
   pop(count = 3, strength = 1) {
     const ctx = this.ctx;
     const p = this.profile;
+    if (p.electric) return; // EVs have no exhaust — no pops or backfires
     for (let i = 0; i < count; i++) {
       const at = ctx.currentTime + i * (0.04 + Math.random() * 0.07);
       const src = ctx.createBufferSource();
@@ -214,6 +224,23 @@ export class EngineAudio {
   starter(duration = 0.9) {
     const ctx = this.ctx;
     const at = ctx.currentTime;
+    if (this.profile.electric) {
+      // inverter arming chime instead of a starter motor
+      [880, 1320, 1760].forEach((f, i) => {
+        const c = ctx.createOscillator();
+        c.type = "sine";
+        c.frequency.value = f;
+        const cg = ctx.createGain();
+        const st = at + i * 0.12;
+        cg.gain.setValueAtTime(0, st);
+        cg.gain.linearRampToValueAtTime(0.18, st + 0.01);
+        cg.gain.exponentialRampToValueAtTime(0.001, st + 0.35);
+        c.connect(cg).connect(this.master);
+        c.start(st);
+        c.stop(st + 0.4);
+      });
+      return;
+    }
     const o = ctx.createOscillator();
     o.type = "sawtooth";
     o.frequency.setValueAtTime(60, at);
