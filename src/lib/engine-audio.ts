@@ -133,10 +133,12 @@ export class EngineAudio {
 
   applyProfile(p: SoundProfile) {
     this.profile = p;
-    this.oscA.type = p.baseTone;
-    this.oscB.type = "square";
-    this.shaper.curve = makeCurve(p.growl);
-    this.subGain.gain.value = p.subOctave;
+    // EVs: pure sine motor tones, no distortion, no combustion rumble
+    this.oscA.type = p.electric ? "sine" : p.baseTone;
+    this.oscB.type = p.electric ? "sine" : "square";
+    this.shaper.curve = makeCurve(p.electric ? 0 : p.growl);
+    this.subGain.gain.value = p.electric ? 0 : p.subOctave;
+    this.filter.Q.value = p.electric ? 0.7 : 6;
   }
 
   resume() {
@@ -175,6 +177,11 @@ export class EngineAudio {
     const sc = p.supercharger ?? 0;
     this.whineGain.gain.setTargetAtTime(running ? sc * 0.45 * (0.3 + norm * 0.7) * (0.5 + throttle * 0.5) : 0, t, 0.06);
     if (p.electric) {
+      // EV: tones follow motor speed (high pitch), not firing pulses
+      const motor = Math.max(60, (rpm / 60) * 2.2);
+      this.oscA.frequency.setTargetAtTime(motor, t, 0.02);
+      this.oscB.frequency.setTargetAtTime(motor * 3.02, t, 0.02);
+      this.filter.frequency.setTargetAtTime(2000 + norm * 8000, t, 0.03);
       // EV: silent standby hum, no exhaust, no firing pulses — motor/inverter whine dominates
       this.noiseGain.gain.setTargetAtTime(0, t, 0.04);
       this.lopeDepth.gain.setTargetAtTime(0, t, 0.05);

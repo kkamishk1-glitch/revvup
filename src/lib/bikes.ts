@@ -9,6 +9,10 @@ import jesko from "@/assets/jesko.jpg";
 import u9 from "@/assets/u9.jpg";
 import gls450 from "@/assets/gls450.jpg";
 import tesla from "@/assets/tesla.jpg";
+import ferrari812 from "@/assets/ferrari812.jpg";
+import gt3rs from "@/assets/gt3rs.jpg";
+import harley from "@/assets/harley.jpg";
+import taycan from "@/assets/taycan.jpg";
 import type { SoundProfile } from "./engine-audio";
 
 export type Bike = {
@@ -180,6 +184,62 @@ export const BIKES: Bike[] = [
     redline: 18000,
     maxRpm: 20000,
     sound: { cylinders: 2, baseTone: "sine", growl: 0.1, filterBase: 500, filterTop: 5000, exhaustNoise: 0.01, popIntensity: 0.2, subOctave: 0.35, lope: 0, supercharger: 0.8, whineRatio: 5, electric: true },
+  },
+  {
+    id: "ferrari812",
+    brand: "Ferrari",
+    name: "812 Competizione",
+    image: ferrari812,
+    engine: "Naturally aspirated 65° V12, 830 hp",
+    displacement: "6,496 cc",
+    cylinders: "12 (V)",
+    transmission: "7-speed DCT (sim. 6)",
+    idle: 1000,
+    redline: 9500,
+    maxRpm: 9800,
+    sound: { cylinders: 12, baseTone: "sawtooth", growl: 0.7, filterBase: 420, filterTop: 6500, exhaustNoise: 0.3, popIntensity: 1.2, subOctave: 0.4, lope: 0 },
+  },
+  {
+    id: "gt3rs",
+    brand: "Porsche",
+    name: "911 GT3 RS (992)",
+    image: gt3rs,
+    engine: "Naturally aspirated flat-six, 518 hp",
+    displacement: "3,996 cc",
+    cylinders: "6 (flat)",
+    transmission: "7-speed PDK (sim. 6)",
+    idle: 950,
+    redline: 9000,
+    maxRpm: 9300,
+    sound: { cylinders: 6, baseTone: "sawtooth", growl: 0.75, filterBase: 450, filterTop: 6000, exhaustNoise: 0.32, popIntensity: 1.1, subOctave: 0.35, lope: 0.2 },
+  },
+  {
+    id: "harley",
+    brand: "Harley-Davidson",
+    name: "Street Glide",
+    image: harley,
+    engine: "Milwaukee-Eight 117 V-twin, 45°",
+    displacement: "1,923 cc",
+    cylinders: "2 (45° V)",
+    transmission: "6-speed Cruise Drive",
+    idle: 850,
+    redline: 5500,
+    maxRpm: 5800,
+    sound: { cylinders: 2, baseTone: "square", growl: 0.6, filterBase: 220, filterTop: 1600, exhaustNoise: 0.22, popIntensity: 1.3, subOctave: 0.85, lope: 1 },
+  },
+  {
+    id: "taycan",
+    brand: "Porsche",
+    name: "Taycan Turbo GT",
+    image: taycan,
+    engine: "Dual electric motors, 1,092 PS",
+    displacement: "Electric",
+    cylinders: "0 (2 motors)",
+    transmission: "2-speed rear (sim. 6)",
+    idle: 500,
+    redline: 16000,
+    maxRpm: 18000,
+    sound: { cylinders: 2, baseTone: "sine", growl: 0, filterBase: 500, filterTop: 6000, exhaustNoise: 0, popIntensity: 0, subOctave: 0, lope: 0, supercharger: 0.9, whineRatio: 7, electric: true },
   },
 ];
 
