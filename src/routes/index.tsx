@@ -33,7 +33,12 @@ function Garage() {
   const [muted, setMuted] = useState(false);
   const [customSounds, setCustomSounds] = useState<Record<string, SoundProfile>>({});
   const [mode, setMode] = useState<DriveMode>("comfort");
-  const sound = useMemo(() => applyMode(customSounds[bike.id] ?? bike.sound, mode), [customSounds, bike, mode]);
+  const isEV = bike.sound.electric || bike.displacement === "Electric";
+  const sound = useMemo(() => {
+    const m = applyMode(customSounds[bike.id] ?? bike.sound, mode);
+    // any EV: always electric, never pops/rasp/combustion pulse
+    return isEV ? { ...m, electric: true, popIntensity: 0, exhaustNoise: 0, lope: 0, growl: 0, subOctave: 0 } : m;
+  }, [customSounds, bike, mode, isEV]);
 
   const audio = useRef<EngineAudio | null>(null);
   const s = useRef({ rpm: 0, throttle: 0, holding: false, running: false, gear: "N" as Gear, auto: false, bike, lastShift: 0, crackleAt: 0, mode: "comfort" as DriveMode });
@@ -143,13 +148,18 @@ function Garage() {
     }
     setStarting(true);
     setIgnition(true);
-    a.starter(0.8);
+    const ev = !!soundRef.current.electric;
+    a.starter(ev ? 0.6 : 1.1);
     window.setTimeout(() => {
       st.running = true;
-      st.rpm = st.bike.idle * 2.2; // catch & settle to idle
-      a.pop(2, 0.8);
+      if (ev) {
+        st.rpm = st.bike.idle; // EV: silent ready state, no flare
+      } else {
+        st.rpm = st.bike.idle * 2.2; // catch & settle to idle
+        a.pop(2, 0.8);
+      }
       setStarting(false);
-    }, 800);
+    }, soundRef.current.electric ? 600 : 1100);
   }, [ensureAudio, starting]);
 
   const press = useCallback(() => {
