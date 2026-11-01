@@ -151,7 +151,7 @@ export const BIKES: Bike[] = [
     idle: 600,
     redline: 18000,
     maxRpm: 20000,
-    sound: { cylinders: 2, baseTone: "sine", growl: 0.1, filterBase: 600, filterTop: 7000, exhaustNoise: 0.02, popIntensity: 0.2, subOctave: 0.5, lope: 0, supercharger: 1, whineRatio: 6 },
+    sound: { cylinders: 2, baseTone: "sine", growl: 0.1, filterBase: 600, filterTop: 7000, exhaustNoise: 0.02, popIntensity: 0.2, subOctave: 0.5, lope: 0, supercharger: 1, whineRatio: 6, electric: true },
   },
   {
     id: "gls450",
@@ -179,7 +179,7 @@ export const BIKES: Bike[] = [
     idle: 500,
     redline: 18000,
     maxRpm: 20000,
-    sound: { cylinders: 2, baseTone: "sine", growl: 0.1, filterBase: 500, filterTop: 5000, exhaustNoise: 0.01, popIntensity: 0.2, subOctave: 0.35, lope: 0, supercharger: 0.8, whineRatio: 5 },
+    sound: { cylinders: 2, baseTone: "sine", growl: 0.1, filterBase: 500, filterTop: 5000, exhaustNoise: 0.01, popIntensity: 0.2, subOctave: 0.35, lope: 0, supercharger: 0.8, whineRatio: 5, electric: true },
   },
 ];
 
