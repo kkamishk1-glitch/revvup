@@ -248,26 +248,47 @@ export class EngineAudio {
       });
       return;
     }
+    // Real-style crank: starter motor whirr + compression strokes, speeding up until the engine catches
+    const p = this.profile;
     const o = ctx.createOscillator();
     o.type = "sawtooth";
-    o.frequency.setValueAtTime(60, at);
-    o.frequency.linearRampToValueAtTime(110, at + duration);
-    const lfo = ctx.createOscillator();
-    lfo.frequency.value = 14;
-    const lg = ctx.createGain();
-    lg.gain.value = 0.12;
-    const g = ctx.createGain();
-    g.gain.setValueAtTime(0.25, at);
-    g.gain.linearRampToValueAtTime(0, at + duration);
-    lfo.connect(lg).connect(g.gain);
+    o.frequency.setValueAtTime(p.cylinders <= 4 ? 140 : 70, at);
+    o.frequency.linearRampToValueAtTime(p.cylinders <= 4 ? 220 : 120, at + duration);
     const f = ctx.createBiquadFilter();
     f.type = "lowpass";
-    f.frequency.value = 900;
+    f.frequency.value = 1200;
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.12, at);
+    g.gain.linearRampToValueAtTime(0.0001, at + duration);
     o.connect(f).connect(g).connect(this.master);
     o.start(at);
-    lfo.start(at);
     o.stop(at + duration);
-    lfo.stop(at + duration);
+    // compression thumps (one per cylinder stroke), accelerating
+    let tt = at + 0.05;
+    let gap = 0.16;
+    while (tt < at + duration) {
+      const th = ctx.createOscillator();
+      th.type = "sine";
+      th.frequency.setValueAtTime(110, tt);
+      th.frequency.exponentialRampToValueAtTime(45, tt + 0.07);
+      const tg = ctx.createGain();
+      tg.gain.setValueAtTime(0.35, tt);
+      tg.gain.exponentialRampToValueAtTime(0.001, tt + 0.08);
+      const n = ctx.createBufferSource();
+      n.buffer = this.noiseBuf;
+      const nf = ctx.createBiquadFilter();
+      nf.type = "lowpass";
+      nf.frequency.value = 700;
+      const ng = ctx.createGain();
+      ng.gain.setValueAtTime(0.15, tt);
+      ng.gain.exponentialRampToValueAtTime(0.001, tt + 0.05);
+      th.connect(tg).connect(this.master);
+      n.connect(nf).connect(ng).connect(this.master);
+      th.start(tt); th.stop(tt + 0.1);
+      n.start(tt, Math.random()); n.stop(tt + 0.06);
+      tt += gap;
+      gap = Math.max(0.05, gap * 0.88);
+    }
   }
 
   close() {
